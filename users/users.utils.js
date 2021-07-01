@@ -8,6 +8,7 @@ export const getUser = async (token) => {
     }
     const { id } = await jwt.verify(token, process.env.SECRET_KEY);
     const user = await client.user.findUnique({where: { id }});
+    console.log(user);
     if(user) {
       return user;
     } else {
@@ -29,13 +30,17 @@ export const protectResolver = (user) => {
 
 export function protectedResolver(ourResolver) {
   return function (root, args, context, info) { 
-    //실행하지않은 함수를 반환
-    //서버가 실행할 함수
     if(!context.loggedInUser) {
-      return {
-        ok: false,
-        error: "Please log in to perform this action.",
-      };
+      console.log('no')
+      const query = info.operation.operation === "query";
+      if(query) {
+        return null
+      } else {
+        return {
+          ok: false,
+          error: "Please log in to perform this action.",
+        };
+      }
     }
     return ourResolver(root, args, context, info);
   }

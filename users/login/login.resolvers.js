@@ -20,13 +20,12 @@ export default {
           error: "password is wrong"
         }
       }
+      //로그인 정보가 옳을 시
       const token = await jwt.sign({id: user.id}, process.env.SECRET_KEY);
       return {
         ok: true,
         token
       }
-      //check password with args.password
-      //make a token and send it to the user
     }
   },
 };

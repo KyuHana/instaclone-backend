@@ -10,6 +10,16 @@ export default gql`
     createdAt: String!
     updatedAt: String!
     bio: String
-    avatar: Upload
+    avatar: String
+    photos: [Photo]
+    following: [User]
+    followers: [User]
+    totalFollowing: Int!
+    totalFollowers: Int!
+    potatoes: String!
+    isMe: Boolean!
+    isFollowing: Boolean!
   }
 `;
+//isFollowing: Boolean!
+//

@@ -1,23 +1,22 @@
-import fs from 'fs';
 import bcrypt from 'bcrypt';
 import client from '../../client';
 import { protectedResolver } from '../users.utils';
-
-console.log(process.cwd());
+import { uploadToS3 } from '../../shared/shared.utils';
 
   const resolverFn = async (
         _, 
         {firstName, lastName, username, email, password:newPassword, bio, avatar}, 
-        {loggedInUser, protectResolver}
+        {loggedInUser}
         ) => {
-        const { filename, createReadStream } = await avatar;
-        const readStream = createReadStream();
-        const writeStream = fs.createWriteStream(process.cwd() + "/uploads/" + filename);
-        readStream.pipe(writeStream)
+        let avatarUrl = null;
+        if(avatar) {
+          avatarUrl = await uploadToS3(avatar, loggedInUser.id, avatars);
+        }
+
         let uglyPassword = null;
         if(newPassword) {
           uglyPassword = await bcrypt.hash(newPassword, 10);
-        }ç
+        }
         const updatedUser = await client.user.update({
           where: {
             id: loggedInUser.id
@@ -27,8 +26,9 @@ console.log(process.cwd());
             lastName,
             username,
             email, 
-            ...(uglyPassword && { password : uglyPassword}),
             bio,
+            ...(uglyPassword && { password : uglyPassword}),
+            ...(avatarUrl && { avatar: avatarUrl })
         }
         });      
         

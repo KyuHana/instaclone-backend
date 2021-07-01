@@ -2,6 +2,15 @@ import client from "../../client"; //prisma문법을 사용
 
 export default {
   Query: {
-    seeProfile: (_, { username }) => client.user.findUnique({ where: { username }}),
+    seeProfile: (_, { username }) => 
+      client.user.findUnique({ 
+        where: {
+          username
+        },
+        include: {
+          following: true,
+          followers: true,
+        }
+      }),
   }
 }
